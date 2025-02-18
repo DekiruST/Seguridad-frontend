@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../services/authService';
+import { registerUser } from '../services/authService';
 
-const Login = () => {
-  const [form, setForm] = useState({ email: '', username: '', password: '' });
+const Register = () => {
+  const [form, setForm] = useState({
+    email: '',
+    username: '',
+    password: '',
+    role: 'common_user',
+  });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -16,19 +21,17 @@ const Login = () => {
     setError('');
 
     if (!form.email || !form.username || !form.password) {
-      setError('Por favor ingresa email, username y contraseña');
+      setError('Faltan campos requeridos');
       return;
     }
 
     try {
-      const data = await loginUser(form);
-      // data = { message, token }
-      if (data.token) {
-        // Guardamos el token en localStorage
-        localStorage.setItem('token', data.token);
-        navigate('/home');
+      const data = await registerUser(form);
+      if (data.message === 'Usuario registrado exitosamente.') {
+        alert('Te has registrado con éxito. Ahora inicia sesión.');
+        navigate('/login');
       } else {
-        setError(data.message || 'Credenciales inválidas');
+        setError(data.message || 'Error en el registro');
       }
     } catch (error) {
       console.error(error);
@@ -38,7 +41,7 @@ const Login = () => {
 
   return (
     <div>
-      <h2>Iniciar Sesión</h2>
+      <h2>Registro</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <label>Email</label><br/>
@@ -64,12 +67,22 @@ const Login = () => {
           value={form.password}
           onChange={handleChange}
         />
+        <br/>
+        <label>Rol</label><br/>
+        <select
+          name="role"
+          value={form.role}
+          onChange={handleChange}
+        >
+          <option value="common_user">common_user</option>
+          <option value="master">master</option>
+        </select>
         <br/><br/>
-        <button type="submit">Login</button>
+
+        <button type="submit">Registrarse</button>
       </form>
-      <p>¿No tienes cuenta? <a href="/register">Regístrate aquí</a></p>
     </div>
   );
 };
 
-export default Login;
+export default Register;

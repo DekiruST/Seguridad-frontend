@@ -6,16 +6,16 @@ const Home = () => {
   const [showExpiryMessage, setShowExpiryMessage] = useState(false);
 
   useEffect(() => {
-   
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
     }
 
+    // Después de 60,000 ms (1 minuto), expiramos la sesión local
     const timer = setTimeout(() => {
       setShowExpiryMessage(true);
       localStorage.removeItem('token');
-    }, 60000); // 1 minuto
+    }, 60000);
 
     return () => clearTimeout(timer);
   }, [navigate]);
@@ -30,7 +30,7 @@ const Home = () => {
   return (
     <div>
       <h2>Bienvenido al Home</h2>
-      <p>Esta vista está protegida.</p>
+      <p>Esta vista está protegida. El token expira en 1 minuto.</p>
     </div>
   );
 };
